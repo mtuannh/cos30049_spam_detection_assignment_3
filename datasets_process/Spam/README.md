@@ -1,7 +1,7 @@
-# Spam Email Dataset
+# Spam Email Datasets
 
 ## Overview
-This dataset contains emails labeled as either **ham (legitimate)** or **spam (junk email)**.
+These datasets contain emails labeled as either **ham (legitimate)** or **spam (junk email)**.
 
 - **Columns**  
   - `text`: The content of the email  
@@ -12,7 +12,6 @@ This dataset contains emails labeled as either **ham (legitimate)** or **spam (j
 - **1 → Spam**: Junk or unwanted emails  
 
 ## Feature Extraction Ideas
-Students may extract features such as:
 - Email length (characters, words)  
 - Frequency of special characters (`!`, `$`, etc.)  
 - Presence of keywords (e.g., *free, win, offer*)  
