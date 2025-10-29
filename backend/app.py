@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, constr
 
-from model_utils import SpamModel
+from .model_utils import SpamModel
 
 app = FastAPI(title="Spam Detection API", version="1.1.0")
 
