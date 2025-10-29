@@ -16,7 +16,8 @@ from sklearn.metrics.cluster import v_measure_score
 from sklearn.metrics import silhouette_score
 
 # === Config ===
-DATA_PATH = Path("datasets_process/Spam/spam_merged_clean.csv")
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_PATH = BASE_DIR / "datasets_process" / "Spam" / "spam_merged_clean.csv"
 RANDOM_STATE = 42
 
 class SpamModel:
