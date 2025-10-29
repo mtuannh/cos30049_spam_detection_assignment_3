@@ -1,0 +1,48 @@
+assignment3_spam_detection/
+│
+├── README.md                         ← introduce then describe how to execute the whole project
+│
+├── datasets_process/
+│   └── Spam/
+│       ├── spam_dataset.csv
+│       ├── spam_dataset_clean.csv
+│       ├── emails.csv
+│       ├── emails_clean.csv
+│       ├── spam2.csv
+│       ├── spam2_clean.csv
+│       └── spam_merged_clean.csv    
+│
+├── backend/                          ← FastAPI (server side)
+│   ├── app.py                        ← define all the route API (GET/POST, PR curve, KMeans,…)
+│   ├── model_utils.py                ← model, load data, metrics, visualisations
+│   ├── requirements.txt              ← needed installation of environment
+│   
+│
+├── frontend/                   
+│   ├── package.json
+│   ├── public/
+│   │   ├── index.html
+│   │   └── favicon.ico
+│   └── src/
+│       ├── App.js                    ← main entry
+│       ├── index.js                  ← React root render
+│       ├── components/
+│       │   ├── PredictForm.js        ← user input form + validation
+│       │   ├── BatchPredict.js       ← batch_predict
+│       │   ├── ChartsDashboard.js    ← indicates 3 to 5 visualisations (spam/ham, top words, hist, PR,…)
+│       │   ├── ModelReport.js        ← metrics + KMeans scores + Calibration
+│       │   └── Loader.js             ← component loading (HD UX)
+│       ├── services/
+│       │   └── api.js                ← file uses to call API (axios/fetch tới FastAPI)
+│       ├── styles/
+│       │   └── main.css              
+│       └── utils/
+│           └── charts.js             ← config Chart.js or Plotly (color, responsive,…)
+│
+├── notebooks/                        
+    ├── Spam detection - Classification.py
+    ├── Spam detection - Clustering.py
+    ├── data_visualize_classification.py
+    ├── in-depth visualisations ML.py
+    └── clean_spam_datasets.py
+
