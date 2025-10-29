@@ -1,5 +1,8 @@
 import React from "react";
-import { NavLink, Routes, Route } from "react-router-dom";
+import { 
+    NavLink, Routes, Route 
+} 
+from "react-router-dom";
 import PredictForm from "./components/PredictForm";
 import BatchPredict from "./components/BatchPredict";
 import ChartsDashboard from "./components/ChartsDashboard";
