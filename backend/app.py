@@ -19,10 +19,10 @@ STARTUP_METRICS = MODEL.train()
 
 # ---- Schemas ----
 class PredictIn(BaseModel):
-    text: constr(strip_whitespace=True, min_length=1)
+    text: str = Field(..., min_length=1)
 
 class BatchPredictIn(BaseModel):
-    texts: List[constr(strip_whitespace=True, min_length=1)] = Field(..., min_items=1, max_items=200)
+    texts: List[str] = Field(..., min_items=1, max_items=200)
 
 # ---- Routes ----
 @app.get("/health")
