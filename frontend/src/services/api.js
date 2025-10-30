@@ -1,5 +1,6 @@
 const BASE = "http://localhost:8000";
 
+
 async function getJSON(path) {
     const res = await fetch(`${BASE}${path}`);
     if (!res.ok) throw new Error(await res.text());
