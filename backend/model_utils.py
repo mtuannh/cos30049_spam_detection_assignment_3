@@ -155,7 +155,7 @@ class SpamModel:
         X_all = self._cache["X_all"]
         n = min(len(X_all), sample_cap)
         Xs = X_all.sample(n, random_state=RANDOM_STATE)
-        Xv = self.vec.fit_transform(Xs)
+        Xv = self.vec.transform(Xs)
         ks = list(range(2, 7))
         inertias = []
         for k in ks:
@@ -172,7 +172,7 @@ class SpamModel:
         idx = np.random.RandomState(RANDOM_STATE).choice(len(X_all), n, replace=False)
         Xs = X_all.iloc[idx]
         ys = y_all.iloc[idx]
-        Xv = self.vec.fit_transform(Xs)
+        Xv = self.vec.transform(Xs)
 
         km = KMeans(n_clusters=2, random_state=RANDOM_STATE, n_init="auto")
         labels = km.fit_predict(Xv)
