@@ -12,6 +12,7 @@ from sklearn.metrics import (
 )
 from sklearn.calibration import calibration_curve
 from sklearn.cluster import KMeans
+from sklearn.cluster import MiniBatchKMeans
 from sklearn.metrics.cluster import v_measure_score
 from sklearn.metrics import silhouette_score
 
@@ -151,32 +152,63 @@ class SpamModel:
         }
 
     # ---------- KMeans: elbow ----------
-    def kmeans_elbow(self, sample_cap: int = 4000) -> Dict[str, Any]:
+    def kmeans_elbow(self, sample_cap: int = 1500) -> Dict[str, Any]:
         X_all = self._cache["X_all"]
         n = min(len(X_all), sample_cap)
+        if n < 10:
+            return {"k_list": [], "inertias": [], "note": "too few samples"}
+
         Xs = X_all.sample(n, random_state=RANDOM_STATE)
-        Xv = self.vec.transform(Xs)
+        Xv = self.vec.transform(Xs)  # CSR sparse
+
         ks = list(range(2, 7))
         inertias = []
+
+        common = dict(random_state=RANDOM_STATE, batch_size=1024, max_iter=100)
         for k in ks:
-            km = KMeans(n_clusters=k, random_state=RANDOM_STATE, n_init="auto")
+            try:
+                km = MiniBatchKMeans(n_clusters=k, **common, n_init=5)  
+            except TypeError:
+                km = MiniBatchKMeans(n_clusters=k, **common)            
+
             km.fit(Xv)
-            inertias.append(float(km.inertia()))
+            inertias.append(float(km.inertia_))
+
         return {"k_list": ks, "inertias": inertias}
 
     # ---------- KMeans: scores (silhouette & v-measure for k=2) ----------
-    def kmeans_scores(self, sample_cap: int = 4000) -> Dict[str, Any]:
-        X_all = self._cache["X_all"]
-        y_all = self._cache["y_all"]
-        n = min(len(X_all), sample_cap)
-        idx = np.random.RandomState(RANDOM_STATE).choice(len(X_all), n, replace=False)
-        Xs = X_all.iloc[idx]
-        ys = y_all.iloc[idx]
-        Xv = self.vec.transform(Xs)
+    def kmeans_scores(self, sample_cap: int = 1500) -> Dict[str, Any]:
+        try:
+            X_all = self._cache["X_all"]; y_all = self._cache["y_all"]
+            n = min(len(X_all), sample_cap)
+            if n < 10:
+                return {"silhouette": None, "v_measure": None, "note": "too few samples"}
 
-        km = KMeans(n_clusters=2, random_state=RANDOM_STATE, n_init="auto")
-        labels = km.fit_predict(Xv)
+            rng = np.random.RandomState(RANDOM_STATE)
+            idx = rng.choice(len(X_all), n, replace=False)
+            Xs = X_all.iloc[idx]; ys = y_all.iloc[idx]
 
-        sil = float(silhouette_score(Xv, labels))
-        vms = float(v_measure_score(ys, labels))
-        return {"silhouette": sil, "v_measure": vms}
+            # chỉ transform, KHÔNG fit lại vec
+            Xv = self.vec.transform(Xs)  # CSR sparse
+
+            # dùng MiniBatchKMeans cho sparse, kèm fallback nếu bản sklearn không có n_init
+            try:
+                km = MiniBatchKMeans(
+                    n_clusters=2, random_state=RANDOM_STATE,
+                    batch_size=1024, max_iter=100, n_init=5
+                )
+            except TypeError:
+                km = MiniBatchKMeans(
+                    n_clusters=2, random_state=RANDOM_STATE,
+                    batch_size=1024, max_iter=100
+                )
+
+            labels = km.fit_predict(Xv)
+
+            # silhouette theo cosine cho TF-IDF sparse
+            sil = float(silhouette_score(Xv, labels, metric="cosine"))
+            vms = float(v_measure_score(ys, labels))
+            return {"silhouette": sil, "v_measure": vms}
+        except Exception as e:
+            # không để 500 trả ra FE; báo lỗi có kiểm soát
+            return {"silhouette": None, "v_measure": None, "error": str(e)}
