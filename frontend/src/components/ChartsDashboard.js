@@ -82,6 +82,17 @@ return (
     </section>
     )}
 
+    {elbow && (
+    <section className="card">
+        <h3>KMeans Elbow</h3>
+        <Line data={{
+        labels: elbow.k_list,
+        datasets: [{ label: "Inertia", data: elbow.inertias }]
+        }}
+        options={{ scales: { x: { title: { display: true, text: "k" }}, y: { title: { display: true, text: "Inertia" }}}}} />
+    </section>
+    )}
+
     {scores && (
     <section className="card">
         <h3>KMeans Scores (k=2)</h3>
@@ -110,7 +121,6 @@ return (
             },
         }}
         />
-        {/* hiển thị thêm số raw nhỏ gọn */}
         <p style={{ marginTop: 8 }}>
         Silhouette: <b>{(scores.silhouette ?? 0).toFixed(3)}</b> ·
         V-measure: <b>{(scores.v_measure ?? 0).toFixed(3)}</b>
