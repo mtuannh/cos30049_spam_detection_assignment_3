@@ -11,15 +11,16 @@ const [core, setCore] = useState(null);
 const [pr, setPr] = useState(null);
 const [cal, setCal] = useState(null);
 const [elbow, setElbow] = useState(null);
+const [scores, setScores] = useState(null);
 const [error, setError] = useState("");
 
 useEffect(() => {
 (async () => {
     try {
-    const [c, p, k, e] = await Promise.all([
-        api.charts(), api.prCurve(), api.calibration(), api.elbow()
+    const [c, p, k, e, s] = await Promise.all([
+        api.charts(), api.prCurve(), api.calibration(), api.elbow(), api.kmeansScores()
     ]);
-    setCore(c); setPr(p); setCal(k); setElbow(e);
+    setCore(c); setPr(p); setCal(k); setElbow(e); setScores(s);
     } catch (err) { setError(err.message || "Failed to load charts"); }
 })();
 }, []);
@@ -81,16 +82,41 @@ return (
     </section>
     )}
 
-    {elbow && (
+    {scores && (
     <section className="card">
-        <h3>KMeans Elbow</h3>
-        <Line data={{
-        labels: elbow.k_list,
-        datasets: [{ label: "Inertia", data: elbow.inertias }]
+        <h3>KMeans Scores (k=2)</h3>
+        <Bar
+        data={{
+            labels: ["Silhouette", "V-measure"],
+            datasets: [
+            {
+                label: "Score",
+                data: [
+                scores.silhouette ?? 0,
+                scores.v_measure ?? 0
+                ],
+            },
+            ],
         }}
-        options={{ scales: { x: { title: { display: true, text: "k" }}, y: { title: { display: true, text: "Inertia" }}}}} />
+        options={{
+            responsive: true,
+            scales: {
+            y: { beginAtZero: true, max: 1, title: { display: true, text: "Score (0–1)" } },
+            x: { title: { display: true, text: "Metric" } },
+            },
+            plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true },
+            },
+        }}
+        />
+        {/* hiển thị thêm số raw nhỏ gọn */}
+        <p style={{ marginTop: 8 }}>
+        Silhouette: <b>{(scores.silhouette ?? 0).toFixed(3)}</b> ·
+        V-measure: <b>{(scores.v_measure ?? 0).toFixed(3)}</b>
+        </p>
     </section>
-    )}
+)}
 </div>
 );
 }
