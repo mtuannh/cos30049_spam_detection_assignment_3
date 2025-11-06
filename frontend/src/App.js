@@ -31,7 +31,7 @@ export default function App() {
         </main>
 
         <footer>
-        <small>FastAPI at http://localhost:8000 • v1.1.0</small>
+        <small>FastAPI at http://localhost:8000 - v1.1.0</small>
         </footer>
     </div>
     );
