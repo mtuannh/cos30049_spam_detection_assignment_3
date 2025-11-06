@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { api } from "../services/api";
 
-export default function PredictForm() {
-const [text, setText] = useState("");
+export default function PredictForm({ text, setText }) {
 const [loading, setLoading] = useState(false);
 const [result, setResult] = useState(null);
 const [error, setError] = useState("");

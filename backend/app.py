@@ -17,6 +17,7 @@ app.add_middleware(
 MODEL = SpamModel()
 STARTUP_METRICS = MODEL.train()
 
+PRED_HISTORY = []
 # ---- Schemas ----
 class PredictIn(BaseModel):
     text: str = Field(..., min_length=1)
