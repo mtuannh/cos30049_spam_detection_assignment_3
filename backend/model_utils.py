@@ -20,7 +20,7 @@ from sklearn.metrics import silhouette_score
 # === Config ===
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "datasets_process" / "Spam" / "spam_merged_clean.csv"
-MODEL_PATH = BASE_DIR / "backend" / "spam_model.pkl"
+MODEL_PATH = BASE_DIR / "backend" / "spam.pkl"
 RANDOM_STATE = 42
 
 class SpamModel:
