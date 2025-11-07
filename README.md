@@ -11,6 +11,7 @@ Spam Email Detection — Assignment 3
    **Install dependencies:**
      cd frontend
      npm install
+     npm start
 3. Configuration for AI Model Integration
    **Model Overview**
    The backend uses a classic Multinomial Naive Bayes classifier trained on text features extracted by TF-IDF Vectorizer.
