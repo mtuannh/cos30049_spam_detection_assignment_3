@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List, Dict, Any
 import numpy as np
 import pandas as pd
+import pickle
 
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
@@ -19,6 +20,7 @@ from sklearn.metrics import silhouette_score
 # === Config ===
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "datasets_process" / "Spam" / "spam_merged_clean.csv"
+MODEL_PATH = BASE_DIR / "backend" / "spam_model.pkl"
 RANDOM_STATE = 42
 
 class SpamModel:
@@ -89,7 +91,41 @@ class SpamModel:
 
         self._label_ratio = {"ham": int((y == 0).sum()), "spam": int((y == 1).sum())}
         self._lengths = pd.Series(X.astype(str).apply(len)).tolist()
+        
+        # Save the trained model and vectorizer
+        self.save_model()
         return metrics
+
+    def save_model(self):
+        """Save the trained model, vectorizers, and cached data to a pickle file"""
+        model_data = {
+            'vectorizer': self.vec,
+            'classifier': self.clf,
+            'count_vectorizer': self.count_vec,
+            'cache': self._cache,
+            'top_words': self._top_words,
+            'label_ratio': self._label_ratio,
+            'lengths': self._lengths
+        }
+        with open(MODEL_PATH, 'wb') as f:
+            pickle.dump(model_data, f)
+
+    def load_model(self):
+        """Load the trained model, vectorizers, and cached data from a pickle file"""
+        try:
+            with open(MODEL_PATH, 'rb') as f:
+                model_data = pickle.load(f)
+                self.vec = model_data['vectorizer']
+                self.clf = model_data['classifier']
+                self.count_vec = model_data['count_vectorizer']
+                self._cache = model_data['cache']
+                self._top_words = model_data['top_words']
+                self._label_ratio = model_data['label_ratio']
+                self._lengths = model_data['lengths']
+            return True
+        except (FileNotFoundError, KeyError) as e:
+            print(f"Error loading model: {str(e)}")
+            return False
 
     # ---------- Predict ----------
     def predict_one(self, text: str) -> Dict[str, Any]:

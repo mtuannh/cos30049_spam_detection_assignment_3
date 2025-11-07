@@ -13,9 +13,14 @@ app.add_middleware(
     allow_methods=["*"], allow_headers=["*"],
 )
 
-# ---- Startup: load & train once ----
+# ---- Startup: try to load model or train new one ----
 MODEL = SpamModel()
-STARTUP_METRICS = MODEL.train()
+if MODEL.load_model():
+    print("Loaded existing model from spam.pkl")
+    STARTUP_METRICS = MODEL.metrics()
+else:
+    print("Training new model...")
+    STARTUP_METRICS = MODEL.train()
 
 PRED_HISTORY = []
 # ---- Schemas ----
