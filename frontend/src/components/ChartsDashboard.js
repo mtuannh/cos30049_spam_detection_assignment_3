@@ -172,62 +172,6 @@ return (
     />
 </section>
 )}
-
-    {elbow && (
-    <section className="card">
-        <h3>KMeans Elbow</h3>
-        <Line data={{
-        labels: elbow.k_list,
-        datasets: [{
-            label: "Inertia",
-            data: elbow.inertias,
-            borderColor: '#FFFFFF',
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-            borderWidth: 2,
-            pointBackgroundColor: '#FFFFFF'
-        }]
-        }}
-        options={{ scales: { x: { title: { display: true, text: "k" }}, y: { title: { display: true, text: "Inertia" }}}}} />
-    </section>
-    )}
-
-    {scores && (
-    <section className="card">
-        <h3>KMeans Scores (k=2)</h3>
-        <Bar
-        data={{
-            labels: ["Silhouette", "V-measure"],
-            datasets: [
-            {
-                label: "Score",
-                data: [
-                scores.silhouette ?? 0,
-                scores.v_measure ?? 0
-                ],
-                backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                borderColor: '#FFFFFF',
-                borderWidth: 1
-            },
-            ],
-        }}
-        options={{
-            responsive: true,
-            scales: {
-            y: { beginAtZero: true, max: 1, title: { display: true, text: "Score (0–1)" } },
-            x: { title: { display: true, text: "Metric" } },
-            },
-            plugins: {
-            legend: { display: false },
-            tooltip: { enabled: true },
-            },
-        }}
-        />
-        <p style={{ marginTop: 8 }}>
-        Silhouette: <b>{(scores.silhouette ?? 0).toFixed(3)}</b> ·
-        V-measure: <b>{(scores.v_measure ?? 0).toFixed(3)}</b>
-        </p>
-    </section>
-)}
 </div>
 
 <h2 style={{ textAlign: 'center', marginBottom: '20px', marginTop: '30px' }}>
