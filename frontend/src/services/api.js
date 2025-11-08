@@ -27,4 +27,5 @@ export const api = {
     calibration: () => getJSON("/calibration"),
     elbow: () => getJSON("/kmeans/elbow"),
     kmeansScores: () => getJSON("/kmeans/scores"),
+    predictionStats: () => getJSON("/prediction-stats"),
 };

@@ -16,17 +16,31 @@ const [pr, setPr] = useState(null);
 const [cal, setCal] = useState(null);
 const [elbow, setElbow] = useState(null);
 const [scores, setScores] = useState(null);
+const [predStats, setPredStats] = useState(null);
 const [error, setError] = useState("");
 
 useEffect(() => {
 (async () => {
     try {
-    const [c, p, k, e, s] = await Promise.all([
-        api.charts(), api.prCurve(), api.calibration(), api.elbow(), api.kmeansScores()
+    const [c, p, k, e, s, ps] = await Promise.all([
+        api.charts(), api.prCurve(), api.calibration(), api.elbow(), api.kmeansScores(), api.predictionStats()
     ]);
-    setCore(c); setPr(p); setCal(k); setElbow(e); setScores(s);
+    setCore(c); setPr(p); setCal(k); setElbow(e); setScores(s); setPredStats(ps);
     } catch (err) { setError(err.message || "Failed to load charts"); }
 })();
+}, []);
+
+// Poll prediction stats every 3 seconds to keep the dynamic chart updated
+useEffect(() => {
+const interval = setInterval(async () => {
+    try {
+    const ps = await api.predictionStats();
+    setPredStats(ps);
+    } catch (err) {
+    console.error("Failed to update prediction stats:", err);
+    }
+}, 3000);
+return () => clearInterval(interval);
 }, []);
 
 if (error) return <div className="error">{error}</div>;
@@ -207,6 +221,47 @@ return (
         <p style={{ marginTop: 8 }}>
         Silhouette: <b>{(scores.silhouette ?? 0).toFixed(3)}</b> ·
         V-measure: <b>{(scores.v_measure ?? 0).toFixed(3)}</b>
+        </p>
+    </section>
+)}
+
+{predStats && predStats.total > 0 && (
+    <section className="card">
+        <h3>Live Prediction Distribution</h3>
+        <Pie data={{
+            labels: ["Ham", "Spam"],
+            datasets: [{
+                data: [predStats.ham, predStats.spam],
+                backgroundColor: ['rgba(75, 192, 192, 0.8)', 'rgba(255, 99, 132, 0.8)'],
+                borderColor: '#FFFFFF',
+                borderWidth: 2
+            }]
+        }} 
+        options={{
+            responsive: true,
+            plugins: {
+                legend: { 
+                    display: true,
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context) => {
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            const total = predStats.total;
+                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
+                    }
+                }
+            }
+        }}
+        />
+        <p style={{ marginTop: 12, textAlign: 'center' }}>
+            <b>Total Predictions:</b> {predStats.total} ·
+            <b> Ham:</b> {predStats.ham} ({predStats.total > 0 ? ((predStats.ham / predStats.total) * 100).toFixed(1) : 0}%) ·
+            <b> Spam:</b> {predStats.spam} ({predStats.total > 0 ? ((predStats.spam / predStats.total) * 100).toFixed(1) : 0}%)
         </p>
     </section>
 )}
