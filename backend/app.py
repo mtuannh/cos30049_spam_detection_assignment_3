@@ -43,18 +43,14 @@ def health() -> Dict[str, Any]:
 @app.post("/predict")
 def predict(inp: PredictIn):
     try:
-        result = MODEL.predict_one(inp.text)
-        PRED_HISTORY.append(result)
-        return result
+        return MODEL.predict_one(inp.text)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.post("/batch_predict")
 def batch_predict(inp: BatchPredictIn):
     try:
-        results = MODEL.predict_batch(inp.texts)
-        PRED_HISTORY.extend(results)
-        return {"results": results}
+        return {"results": MODEL.predict_batch(inp.texts)}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -82,14 +78,3 @@ def kmeans_elbow():
 @app.get("/kmeans/scores")
 def kmeans_scores():
     return MODEL.kmeans_scores()
-
-@app.get("/prediction-stats")
-def prediction_stats():
-    """Return counts of spam and ham predictions from session history."""
-    spam_count = sum(1 for p in PRED_HISTORY if p.get("label") == 1)
-    ham_count = sum(1 for p in PRED_HISTORY if p.get("label") == 0)
-    return {
-        "spam": spam_count,
-        "ham": ham_count,
-        "total": len(PRED_HISTORY)
-    }
