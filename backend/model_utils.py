@@ -203,8 +203,6 @@ class SpamModel:
             "bins": int(n_bins),
         }
 
-    # KMeans: elbow removed
-
 #KMeans: scores (silhouette & v-measure for k=2)
     def kmeans_scores(self, sample_cap: int = 1500) -> Dict[str, Any]:
         try:
