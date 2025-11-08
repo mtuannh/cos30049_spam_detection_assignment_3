@@ -231,9 +231,7 @@ return (
                         }}
                         onMouseOver={(e) => e.target.style.backgroundColor = '#1976D2'}
                         onMouseOut={(e) => e.target.style.backgroundColor = '#2196F3'}
-                    >
-                        <span>📊</span>
-                        View Pie Chart
+                    >View Pie Chart
                     </button>
                     <button 
                         onClick={downloadCSV}
@@ -253,9 +251,7 @@ return (
                         }}
                         onMouseOver={(e) => e.target.style.backgroundColor = '#45a049'}
                         onMouseOut={(e) => e.target.style.backgroundColor = '#4caf50'}
-                    >
-                        <span>📥</span>
-                        Download CSV
+                    >Download CSV
                     </button>
                 </div>
             </div>
