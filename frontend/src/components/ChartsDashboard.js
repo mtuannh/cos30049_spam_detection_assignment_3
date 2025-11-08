@@ -18,6 +18,7 @@ const [elbow, setElbow] = useState(null);
 const [scores, setScores] = useState(null);
 const [predStats, setPredStats] = useState(null);
 const [error, setError] = useState("");
+const [resetting, setResetting] = useState(false);
 
 useEffect(() => {
 (async () => {
@@ -43,6 +44,42 @@ const interval = setInterval(async () => {
 return () => clearInterval(interval);
 }, []);
 
+// Scroll to pie chart if hash is present in URL
+useEffect(() => {
+    if (window.location.hash === '#realtime-pie-chart') {
+        // Wait for data to load and then scroll
+        const scrollToPieChart = () => {
+            const element = document.getElementById("realtime-pie-chart");
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        };
+        // Try immediately and also after a delay to handle async data loading
+        scrollToPieChart();
+        const timeout = setTimeout(scrollToPieChart, 500);
+        return () => clearTimeout(timeout);
+    }
+}, [predStats, core]);
+
+// Reset prediction history
+const handleReset = async () => {
+    if (!window.confirm("Are you sure you want to reset all prediction history? This action cannot be undone.")) {
+        return;
+    }
+    
+    setResetting(true);
+    try {
+        await api.resetPredictions();
+        // Refresh prediction stats immediately
+        const ps = await api.predictionStats();
+        setPredStats(ps);
+    } catch (err) {
+        setError(err.message || "Failed to reset predictions");
+    } finally {
+        setResetting(false);
+    }
+};
+
 if (error) return <div className="error">{error}</div>;
 if (!core) return <div className="card">Loading charts…</div>;
 
@@ -64,7 +101,94 @@ const histLabels = counts.map((_, i) => `${i * step}–${(i + 1) * step}`);
 return (
 <>
     <h2 style={{ textAlign: 'center', marginBottom: '20px', marginTop: '10px' }}>
-        Visualizations of the Training Dataset
+        Visualizations of Real-Time Update
+    </h2>
+    <div className="grid" style={{ display: 'flex', justifyContent: 'center' }} id="realtime-pie-chart">
+    {predStats && (
+        <section className="card" style={{ maxWidth: '500px', width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+                <h3 style={{ margin: 0 }}>Live Prediction Distribution</h3>
+                {predStats.total > 0 && (
+                    <button 
+                        onClick={handleReset}
+                        disabled={resetting}
+                        style={{
+                            backgroundColor: resetting ? '#999' : '#ff6b6b',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '6px 12px',
+                            borderRadius: '4px',
+                            cursor: resetting ? 'not-allowed' : 'pointer',
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            transition: 'background-color 0.3s'
+                        }}
+                        onMouseOver={(e) => {
+                            if (!resetting) e.target.style.backgroundColor = '#ff5252';
+                        }}
+                        onMouseOut={(e) => {
+                            if (!resetting) e.target.style.backgroundColor = '#ff6b6b';
+                        }}
+                    >
+                        <span>🔄</span>
+                        {resetting ? 'Resetting...' : 'Reset'}
+                    </button>
+                )}
+            </div>
+            {predStats.total > 0 ? (
+                <>
+                    <div style={{ maxWidth: '350px', margin: '0 auto' }}>
+                    <Pie data={{
+                        labels: ["Ham", "Spam"],
+                        datasets: [{
+                            data: [predStats.ham, predStats.spam],
+                            backgroundColor: ['rgba(75, 192, 192, 0.8)', 'rgba(255, 99, 132, 0.8)'],
+                            borderColor: '#FFFFFF',
+                            borderWidth: 2
+                        }]
+                    }} 
+                    options={{
+                        responsive: true,
+                        plugins: {
+                            legend: { 
+                                display: true,
+                                position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        const label = context.label || '';
+                                        const value = context.parsed || 0;
+                                        const total = predStats.total;
+                                        const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                        return `${label}: ${value} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }}
+                    />
+                    </div>
+                    <p style={{ marginTop: 12, textAlign: 'center' }}>
+                        <b>Total Predictions:</b> {predStats.total} ·
+                        <b> Ham:</b> {predStats.ham} ({predStats.total > 0 ? ((predStats.ham / predStats.total) * 100).toFixed(1) : 0}%) ·
+                        <b> Spam:</b> {predStats.spam} ({predStats.total > 0 ? ((predStats.spam / predStats.total) * 100).toFixed(1) : 0}%)
+                    </p>
+                </>
+            ) : (
+                <p style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+                    No predictions yet. Make some predictions on the <b>Predict</b> or <b>Batch</b> pages to see the distribution here.
+                </p>
+            )}
+        </section>
+    )}
+    </div>
+
+    <h2 style={{ textAlign: 'center', marginBottom: '20px', marginTop: '30px' }}>
+        Visualizations of the 2025 Dataset
     </h2>
     <div className="grid">
     <section className="card">
@@ -171,62 +295,6 @@ return (
     }} 
     />
 </section>
-)}
-</div>
-
-<h2 style={{ textAlign: 'center', marginBottom: '20px', marginTop: '30px' }}>
-    Visualizations of Real-Time Update
-</h2>
-<div className="grid" style={{ display: 'flex', justifyContent: 'center' }}>
-{predStats && (
-    <section className="card" style={{ maxWidth: '500px', width: '100%' }}>
-        <h3>Live Prediction Distribution</h3>
-        {predStats.total > 0 ? (
-            <>
-                <div style={{ maxWidth: '350px', margin: '0 auto' }}>
-                <Pie data={{
-                    labels: ["Ham", "Spam"],
-                    datasets: [{
-                        data: [predStats.ham, predStats.spam],
-                        backgroundColor: ['rgba(75, 192, 192, 0.8)', 'rgba(255, 99, 132, 0.8)'],
-                        borderColor: '#FFFFFF',
-                        borderWidth: 2
-                    }]
-                }} 
-                options={{
-                    responsive: true,
-                    plugins: {
-                        legend: { 
-                            display: true,
-                            position: 'bottom'
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: (context) => {
-                                    const label = context.label || '';
-                                    const value = context.parsed || 0;
-                                    const total = predStats.total;
-                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                                    return `${label}: ${value} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    }
-                }}
-                />
-                </div>
-                <p style={{ marginTop: 12, textAlign: 'center' }}>
-                    <b>Total Predictions:</b> {predStats.total} ·
-                    <b> Ham:</b> {predStats.ham} ({predStats.total > 0 ? ((predStats.ham / predStats.total) * 100).toFixed(1) : 0}%) ·
-                    <b> Spam:</b> {predStats.spam} ({predStats.total > 0 ? ((predStats.spam / predStats.total) * 100).toFixed(1) : 0}%)
-                </p>
-            </>
-        ) : (
-            <p style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
-                No predictions yet. Make some predictions on the <b>Predict</b> or <b>Batch</b> pages to see the distribution here.
-            </p>
-        )}
-    </section>
 )}
 </div>
 </>

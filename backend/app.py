@@ -93,3 +93,10 @@ def prediction_stats():
         "ham": ham_count,
         "total": len(PRED_HISTORY)
     }
+
+@app.post("/reset-predictions")
+def reset_predictions():
+    """Reset the prediction history."""
+    global PRED_HISTORY
+    PRED_HISTORY.clear()
+    return {"message": "Prediction history reset successfully", "total": 0}

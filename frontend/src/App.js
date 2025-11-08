@@ -14,7 +14,7 @@ export default function App() {
     return (
     <div className="container">
         <header>
-        <h1>Spam Detection — Assignment 3</h1>
+        <h1>Online Spam Detection</h1>
         <nav>
             <NavLink to="/" end>Predict</NavLink>
             <NavLink to="/batch">Batch</NavLink>

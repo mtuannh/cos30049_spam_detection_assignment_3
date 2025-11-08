@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 
 export default function BatchPredict() {
+const navigate = useNavigate();
 const [raw, setRaw] = useState("");
 const [rows, setRows] = useState([]);
 const [loading, setLoading] = useState(false);
@@ -73,6 +75,63 @@ const getStats = () => {
     const hamCount = rows.filter(r => r.label === 0).length;
     const avgSpamProb = rows.reduce((sum, r) => sum + (r.probability || 0), 0) / rows.length;
     return { spamCount, hamCount, avgSpamProb };
+};
+
+// Convert results to CSV format
+const convertToCSV = () => {
+    if (rows.length === 0) return "";
+    
+    // CSV header
+    const headers = ["#", "Text", "Label", "Spam Probability (%)", "Confidence"];
+    const csvRows = [headers.join(",")];
+    
+    // CSV rows
+    rows.forEach((r, i) => {
+        const confidence = r.probability > 0.9 || r.probability < 0.1 ? 'Very High' : 
+                        r.probability > 0.7 || r.probability < 0.3 ? 'High' : 
+                        r.probability > 0.6 || r.probability < 0.4 ? 'Medium' : 'Low';
+        
+        const label = r.label === 1 ? "SPAM" : "HAM";
+        const spamProb = ((r.probability || 0) * 100).toFixed(2);
+        
+        // Escape text for CSV (handle commas, quotes, newlines)
+        const escapedText = `"${(r.text || "").replace(/"/g, '""')}"`;
+        
+        csvRows.push([
+            i + 1,
+            escapedText,
+            label,
+            spamProb,
+            confidence
+        ].join(","));
+    });
+    
+    return csvRows.join("\n");
+};
+
+// Download CSV file
+const downloadCSV = () => {
+    if (rows.length === 0) {
+        setError("No results to download. Please run batch prediction first.");
+        return;
+    }
+    
+    const csvContent = convertToCSV();
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute("href", url);
+    link.setAttribute("download", `batch_prediction_results_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
+// Navigate to analytics page and scroll to pie chart
+const goToPieChart = () => {
+    navigate("/analytics#realtime-pie-chart");
 };
 
 const stats = getStats();
@@ -154,7 +213,55 @@ return (
             marginTop: '15px',
             marginBottom: '15px'
         }}>
-            <h3 style={{ marginTop: 0, marginBottom: '10px', color: '#fff' }}>Batch Results Summary</h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <h3 style={{ marginTop: 0, marginBottom: 0, color: '#fff' }}>Batch Results Summary</h3>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button 
+                        onClick={goToPieChart}
+                        style={{
+                            backgroundColor: '#2196F3',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            transition: 'background-color 0.3s'
+                        }}
+                        onMouseOver={(e) => e.target.style.backgroundColor = '#1976D2'}
+                        onMouseOut={(e) => e.target.style.backgroundColor = '#2196F3'}
+                    >
+                        <span>📊</span>
+                        View Pie Chart
+                    </button>
+                    <button 
+                        onClick={downloadCSV}
+                        style={{
+                            backgroundColor: '#4caf50',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '8px 16px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            transition: 'background-color 0.3s'
+                        }}
+                        onMouseOver={(e) => e.target.style.backgroundColor = '#45a049'}
+                        onMouseOut={(e) => e.target.style.backgroundColor = '#4caf50'}
+                    >
+                        <span>📥</span>
+                        Download CSV
+                    </button>
+                </div>
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px', color: '#fff' }}>
                 <div>
                     <strong>Total Processed:</strong> {rows.length}

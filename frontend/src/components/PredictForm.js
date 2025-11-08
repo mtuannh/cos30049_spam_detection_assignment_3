@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 
 export default function PredictForm({ text, setText }) {
+const navigate = useNavigate();
 const [loading, setLoading] = useState(false);
 const [result, setResult] = useState(null);
 const [error, setError] = useState("");
@@ -79,6 +81,11 @@ try {
 
 const labelBadge = (label) =>
 label ? <span className="badge spam">SPAM</span> : <span className="badge ham">HAM</span>;
+
+// Navigate to analytics page and scroll to pie chart
+const goToPieChart = () => {
+    navigate("/analytics#realtime-pie-chart");
+};
 
 // Helper to get color based on character count
 const getCharCountColor = () => {
@@ -177,7 +184,31 @@ return (
 
     {result && (
     <div className="result">
-        <div>{labelBadge(result.label)}</div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <div>{labelBadge(result.label)}</div>
+            <button 
+                onClick={goToPieChart}
+                style={{
+                    backgroundColor: '#2196F3',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#1976D2'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#2196F3'}
+            >
+                <span>📊</span>
+                View Pie Chart
+            </button>
+        </div>
         <p>Probability (spam): <b>{(result.probability * 100).toFixed(2)}%</b></p>
         <div style={{ 
             marginTop: '10px', 

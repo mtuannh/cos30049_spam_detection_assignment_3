@@ -28,4 +28,5 @@ export const api = {
     elbow: () => getJSON("/kmeans/elbow"),
     kmeansScores: () => getJSON("/kmeans/scores"),
     predictionStats: () => getJSON("/prediction-stats"),
+    resetPredictions: () => postJSON("/reset-predictions", {}),
 };
