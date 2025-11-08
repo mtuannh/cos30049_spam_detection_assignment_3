@@ -30,7 +30,9 @@ header {
     display:flex; 
     align-items:center; 
     justify-content:space-between; 
-    gap:16px; margin-bottom: 24px; 
+    gap:16px; 
+    margin-bottom: 24px; 
+    flex-wrap: wrap; /* allow title and nav to wrap on small screens */
 }
 
 h1 { 
@@ -44,6 +46,15 @@ nav a {
     text-decoration: none; 
     padding: 6px 10px; 
     border-radius: 10px; 
+}
+
+/* nav container tweaks for small screens */
+nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
 }
 
 nav a.active { 
@@ -170,3 +181,41 @@ footer {
     text-align:center; 
     margin-top: 30px; 
 }
+
+/* ------------------ Responsive Breakpoints ------------------ */
+/* Mobile phones: <= 480px */
+@media (max-width: 480px) {
+    .container { padding: 12px; }
+    h1 { font-size: 18px; }
+    nav { width: 100%; order: 2; }
+    nav a { margin-left: 0; padding: 8px 12px; }
+
+    .grid { grid-template-columns: 1fr; }
+    .grid2 { grid-template-columns: 1fr; }
+    .card { padding: 14px; }
+
+    .actions { flex-direction: column; }
+    .actions > * { width: 100%; }
+    .form textarea, textarea { min-height: 140px; }
+
+    .table-wrap { overflow-x: auto; }
+}
+
+/* Tablets: 481px – 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+    .container { padding: 16px; max-width: 900px; }
+    h1 { font-size: 20px; }
+    nav { flex-wrap: wrap; }
+
+    /* two-up grid when space allows */
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Laptops / small desktops: 769px – 1024px */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .container { max-width: 1000px; }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Large desktops: > 1024px keep current defaults */

@@ -265,5 +265,4 @@ class SpamModel:
             vms = float(v_measure_score(ys, labels))
             return {"silhouette": sil, "v_measure": vms}
         except Exception as e:
-            # không để 500 trả ra FE; báo lỗi có kiểm soát
             return {"silhouette": None, "v_measure": None, "error": str(e)}
