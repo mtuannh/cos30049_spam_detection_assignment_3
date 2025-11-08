@@ -62,7 +62,11 @@ counts[idx] += 1;
 const histLabels = counts.map((_, i) => `${i * step}–${(i + 1) * step}`);
 
 return (
-<div className="grid">
+<>
+    <h2 style={{ textAlign: 'center', marginBottom: '20px', marginTop: '10px' }}>
+        Visualizations of the Training Dataset
+    </h2>
+    <div className="grid">
     <section className="card">
     <h3>Spam vs Ham</h3>
     <Pie data={{
@@ -224,12 +228,18 @@ return (
         </p>
     </section>
 )}
+</div>
 
+<h2 style={{ textAlign: 'center', marginBottom: '20px', marginTop: '30px' }}>
+    Visualizations of Real-Time Update
+</h2>
+<div className="grid" style={{ display: 'flex', justifyContent: 'center' }}>
 {predStats && (
-    <section className="card">
+    <section className="card" style={{ maxWidth: '500px', width: '100%' }}>
         <h3>Live Prediction Distribution</h3>
         {predStats.total > 0 ? (
             <>
+                <div style={{ maxWidth: '350px', margin: '0 auto' }}>
                 <Pie data={{
                     labels: ["Ham", "Spam"],
                     datasets: [{
@@ -260,6 +270,7 @@ return (
                     }
                 }}
                 />
+                </div>
                 <p style={{ marginTop: 12, textAlign: 'center' }}>
                     <b>Total Predictions:</b> {predStats.total} ·
                     <b> Ham:</b> {predStats.ham} ({predStats.total > 0 ? ((predStats.ham / predStats.total) * 100).toFixed(1) : 0}%) ·
@@ -274,5 +285,6 @@ return (
     </section>
 )}
 </div>
+</>
 );
 }
