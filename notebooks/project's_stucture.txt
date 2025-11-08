@@ -38,7 +38,7 @@ assignment3_spam_detection/
 │       └── utils/
 │           └── charts.js             ← config Chart.js or Plotly (color, responsive,…)
 │
-├── notebooks/                        
+└── notebooks/                        
     ├── Spam detection - Classification.py
     ├── Spam detection - Clustering.py
     ├── data_visualize_classification.py
