@@ -14,7 +14,7 @@ export default function ChartsDashboard() {
 const [core, setCore] = useState(null);
 const [pr, setPr] = useState(null);
 const [cal, setCal] = useState(null);
-const [elbow, setElbow] = useState(null);
+// elbow chart removed
 const [scores, setScores] = useState(null);
 const [predStats, setPredStats] = useState(null);
 const [error, setError] = useState("");
@@ -22,10 +22,10 @@ const [error, setError] = useState("");
 useEffect(() => {
 (async () => {
     try {
-    const [c, p, k, e, s, ps] = await Promise.all([
-        api.charts(), api.prCurve(), api.calibration(), api.elbow(), api.kmeansScores(), api.predictionStats()
+    const [c, p, k, s, ps] = await Promise.all([
+        api.charts(), api.prCurve(), api.calibration(), api.kmeansScores(), api.predictionStats()
     ]);
-    setCore(c); setPr(p); setCal(k); setElbow(e); setScores(s); setPredStats(ps);
+    setCore(c); setPr(p); setCal(k); setScores(s); setPredStats(ps);
     } catch (err) { setError(err.message || "Failed to load charts"); }
 })();
 }, []);

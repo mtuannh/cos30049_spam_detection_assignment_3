@@ -75,9 +75,7 @@ def pr_curve():
 def calibration():
     return MODEL.calibration()
 
-@app.get("/kmeans/elbow")
-def kmeans_elbow():
-    return MODEL.kmeans_elbow()
+# /kmeans/elbow endpoint removed (feature deprecated)
 
 @app.get("/kmeans/scores")
 def kmeans_scores():

@@ -12,12 +12,11 @@ from sklearn.metrics import (
     precision_recall_curve
 )
 from sklearn.calibration import calibration_curve
-from sklearn.cluster import KMeans
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.metrics.cluster import v_measure_score
 from sklearn.metrics import silhouette_score
 
-# === Config ===
+#Config
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "datasets_process" / "Spam" / "spam_merged_clean.csv"
 MODEL_PATH = BASE_DIR / "backend" / "spam.pkl"
@@ -204,30 +203,7 @@ class SpamModel:
             "bins": int(n_bins),
         }
 
-#KMeans: elbow
-    def kmeans_elbow(self, sample_cap: int = 1500) -> Dict[str, Any]:
-        X_all = self._cache["X_all"]
-        n = min(len(X_all), sample_cap)
-        if n < 10:
-            return {"k_list": [], "inertias": [], "note": "too few samples"}
-
-        Xs = X_all.sample(n, random_state=RANDOM_STATE)
-        Xv = self.vec.transform(Xs)
-
-        ks = list(range(2, 7))
-        inertias = []
-
-        common = dict(random_state=RANDOM_STATE, batch_size=1024, max_iter=100)
-        for k in ks:
-            try:
-                km = MiniBatchKMeans(n_clusters=k, **common, n_init=5)  
-            except TypeError:
-                km = MiniBatchKMeans(n_clusters=k, **common)            
-
-            km.fit(Xv)
-            inertias.append(float(km.inertia_))
-
-        return {"k_list": ks, "inertias": inertias}
+    # KMeans: elbow removed
 
 #KMeans: scores (silhouette & v-measure for k=2)
     def kmeans_scores(self, sample_cap: int = 1500) -> Dict[str, Any]:
