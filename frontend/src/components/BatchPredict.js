@@ -11,7 +11,7 @@ const [validLines, setValidLines] = useState(0);
 const [warnings, setWarnings] = useState([]);
 const [previewLines, setPreviewLines] = useState([]);
 
-// Real-time validation and feedback
+//real-time validation and feedback
 useEffect(() => {
     const lines = raw.split("\n");
     const trimmedLines = lines.map(s => s.trim()).filter(s => s.length > 0);
@@ -19,10 +19,7 @@ useEffect(() => {
     setLineCount(lines.length);
     setValidLines(trimmedLines.length);
     
-    // Preview first 3 non-empty lines
-    setPreviewLines(trimmedLines.slice(0, 3));
-    
-    // Generate warnings
+//generate warnings
     const newWarnings = [];
     
     if (trimmedLines.length > 200) {
@@ -66,7 +63,7 @@ try {
 }
 };
 
-// Calculate statistics from results
+//calculate statistics from results
 const getStats = () => {
     if (rows.length === 0) return null;
     const spamCount = rows.filter(r => r.label === 1).length;
@@ -93,8 +90,8 @@ return (
                 borderWidth: validLines === 0 && raw.length > 0 ? '2px' : '1px'
             }}
         />
-        
-        {/* Real-time Stats */}
+
+        {/*Real-time Stats*/}
         <div style={{ 
             display: 'flex', 
             justifyContent: 'space-between', 
@@ -111,7 +108,7 @@ return (
         </div>
     </div>
     
-    {/* Warnings */}
+    {/*Warnings*/}
     {warnings.length > 0 && (
         <div style={{ 
             backgroundColor: '#fff3cd', 
@@ -187,8 +184,8 @@ return (
         <tbody>
             {rows.map((r, i) => {
                 const confidence = r.probability > 0.9 || r.probability < 0.1 ? 'Very High' : 
-                                r.probability > 0.7 || r.probability < 0.3 ? 'High' : 
-                                r.probability > 0.6 || r.probability < 0.4 ? 'Medium' : 'Low';
+                    r.probability > 0.7 || r.probability < 0.3 ? 'High' : 
+                    r.probability > 0.6 || r.probability < 0.4 ? 'Medium' : 'Low';
                 return (
                 <tr key={i} style={{ 
                     backgroundColor: r.label ? 'rgba(255, 99, 99, 0.1)' : 'rgba(99, 255, 99, 0.1)' 

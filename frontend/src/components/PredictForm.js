@@ -10,7 +10,7 @@ const [charCount, setCharCount] = useState(0);
 const [wordCount, setWordCount] = useState(0);
 const [suggestions, setSuggestions] = useState([]);
 
-// Real-time validation and feedback
+//real-time validation and feedback
 useEffect(() => {
     const errors = [];
     const clean = text.trim();
@@ -18,16 +18,15 @@ useEffect(() => {
     setCharCount(text.length);
     setWordCount(clean ? clean.split(/\s+/).length : 0);
     
-    // Comprehensive validation
+    //comprehensive validation
     if (clean.length === 0) {
-        // No error when empty, just waiting for input
+        //no error when empty, just waiting for input
     } else if (clean.length < 2) {
         errors.push("Message too short (minimum 2 characters)");
     } else if (clean.length > 5000) {
         errors.push("Message too long (maximum 5000 characters)");
     }
-    
-    // Check for suspicious patterns
+    //check for suspicious patterns
     const suggestions = [];
     if (clean.match(/(.)\1{4,}/)) {
         suggestions.push("Contains repeated characters - may affect accuracy");
@@ -80,7 +79,7 @@ try {
 const labelBadge = (label) =>
 label ? <span className="badge spam">SPAM</span> : <span className="badge ham">HAM</span>;
 
-// Helper to get color based on character count
+//helper to get color based on character count
 const getCharCountColor = () => {
     if (charCount === 0) return '#999';
     if (charCount < 2) return '#ff6b6b';

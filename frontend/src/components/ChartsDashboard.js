@@ -30,7 +30,7 @@ useEffect(() => {
 })();
 }, []);
 
-// Poll prediction stats every 3 seconds to keep the dynamic chart updated
+//prediction stats every 3 seconds to keep the dynamic chart updated
 useEffect(() => {
 const interval = setInterval(async () => {
     try {
@@ -50,7 +50,7 @@ const labelDist = core.label_distribution || { ham: 0, spam: 0 };
 const topWords = core.top_spam_words || [];
 const histLengths = core.message_length_hist || [];
 
-// build histogram (50 bins)
+//build histogram(50 bins)
 const bins = 50;
 const maxLen = Math.max(1, ...histLengths);
 const step = Math.ceil(maxLen / bins);
