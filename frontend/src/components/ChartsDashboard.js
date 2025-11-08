@@ -103,8 +103,8 @@ return (
         x: parseFloat(r), 
         y: parseFloat(pr.precision[i]) 
         })),
-        borderColor: '#38bdf8',
-        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+        borderColor: '#FFFFFF',
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
         borderWidth: 2,
         pointRadius: 0,
         tension: 0.1
