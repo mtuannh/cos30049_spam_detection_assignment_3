@@ -3,13 +3,13 @@ import { Chart as ChartJS, defaults } from "chart.js";
 
 export function setupChartDefaults() {
     ChartJS.register();
-    defaults.color = "#e5e7eb";
+    defaults.color = "#FFFFFF";  // White text color
     defaults.font.family = "ui-sans-serif, system-ui";
     defaults.plugins.legend.labels.boxWidth = 12;
-    defaults.plugins.legend.labels.color = "#94a3b8";
-    defaults.plugins.tooltip.backgroundColor = "rgba(15,23,42,0.9)";
-    defaults.plugins.tooltip.borderColor = "#38bdf8";
+    defaults.plugins.legend.labels.color = "#FFFFFF";  // White legend text
+    defaults.plugins.tooltip.backgroundColor = "rgba(0,0,0,0.8)";
+    defaults.plugins.tooltip.borderColor = "#FFFFFF";
     defaults.plugins.tooltip.borderWidth = 1;
-    defaults.plugins.tooltip.titleColor = "#38bdf8";
-    defaults.plugins.tooltip.bodyColor = "#e2e8f0";
+    defaults.plugins.tooltip.titleColor = "#FFFFFF";
+    defaults.plugins.tooltip.bodyColor = "#FFFFFF";
 }

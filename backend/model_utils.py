@@ -165,15 +165,34 @@ class SpamModel:
 
     # ---------- Advanced: PR curve ----------
     def pr_curve(self) -> Dict[str, Any]:
-        Xte_vec = self._cache["X_test_vec"]
-        yte = self._cache["y_test"]
-        probs = self.clf.predict_proba(Xte_vec)[:, 1]
-        precision, recall, thresholds = precision_recall_curve(yte, probs)
-        return {
-            "precision": precision.tolist(),
-            "recall": recall.tolist(),
-            "thresholds": thresholds.tolist(),
-        }
+        try:
+            Xte_vec = self._cache["X_test_vec"]
+            yte = self._cache["y_test"]
+            probs = self.clf.predict_proba(Xte_vec)[:, 1]
+            precision, recall, thresholds = precision_recall_curve(yte, probs)
+            
+            # Convert numpy arrays to lists and ensure they have matching lengths
+            precision = precision.tolist()
+            recall = recall.tolist()
+            
+            # The API needs to return arrays of equal length
+            if len(precision) > len(recall):
+                precision = precision[:len(recall)]
+            elif len(recall) > len(precision):
+                recall = recall[:len(precision)]
+                
+            return {
+                "precision": precision,
+                "recall": recall,
+                "thresholds": thresholds.tolist(),
+            }
+        except Exception as e:
+            print(f"Error generating PR curve: {str(e)}")
+            return {
+                "precision": [],
+                "recall": [],
+                "thresholds": []
+            }
 
     # ---------- Advanced: Calibration ----------
     def calibration(self, n_bins: int = 10) -> Dict[str, Any]:

@@ -2,9 +2,13 @@ import React, { useEffect, useState } from "react";
 import { api } from "../services/api";
 import { Bar, Pie, Line } from "react-chartjs-2";
 import {
-    Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Tooltip, Legend,
+    Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, 
+    PointElement, LineElement, Title, Tooltip, Legend, Filler
 } from "chart.js";
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Tooltip, Legend);
+ChartJS.register(
+    CategoryScale, LinearScale, BarElement, ArcElement, 
+    PointElement, LineElement, Title, Tooltip, Legend, Filler
+);
 
 export default function ChartsDashboard() {
 const [core, setCore] = useState(null);
@@ -49,7 +53,12 @@ return (
     <h3>Spam vs Ham</h3>
     <Pie data={{
         labels: ["Ham", "Spam"],
-        datasets: [{ data: [labelDist.ham, labelDist.spam] }]
+        datasets: [{
+            data: [labelDist.ham, labelDist.spam],
+            backgroundColor: ['rgba(255, 255, 255, 0.8)', 'rgba(255, 255, 255, 0.4)'],
+            borderColor: '#FFFFFF',
+            borderWidth: 1
+        }]
     }} />
     </section>
 
@@ -57,7 +66,13 @@ return (
     <h3>Top 20 Spam Words</h3>
     <Bar data={{
         labels: topWords.map(t => t[0]),
-        datasets: [{ label: "Frequency", data: topWords.map(t => t[1]) }]
+        datasets: [{
+            label: "Frequency",
+            data: topWords.map(t => t[1]),
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            borderColor: '#FFFFFF',
+            borderWidth: 1
+        }]
     }}
     options={{ responsive: true, plugins: { legend: { display: false } }}} />
     </section>
@@ -66,7 +81,13 @@ return (
     <h3>Message Length Histogram</h3>
     <Bar data={{
         labels: histLabels,
-        datasets: [{ label: "Count", data: counts }]
+        datasets: [{
+            label: "Count",
+            data: counts,
+            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+            borderColor: '#FFFFFF',
+            borderWidth: 1
+        }]
     }}
     options={{ responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { maxRotation: 0 }}} }} />
     </section>
@@ -75,10 +96,39 @@ return (
     <section className="card">
         <h3>Precision–Recall Curve</h3>
         <Line data={{
-        labels: pr.recall,
-        datasets: [{ label: "Precision", data: pr.precision }]
+            labels: pr.recall,
+            datasets: [{
+                label: "Precision",
+                data: pr.precision,
+                borderColor: '#FFFFFF',
+                backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                borderWidth: 2,
+                pointBackgroundColor: '#FFFFFF',
+                pointRadius: 3,
+                tension: 0.4,
+                fill: true
+            }]
         }}
-        options={{ parsing: false, scales: { x: { title: { display: true, text: "Recall" }}, y: { title: { display: true, text: "Precision" }}}}} />
+        options={{
+            responsive: true,
+            parsing: false,
+            scales: {
+                x: {
+                    title: { display: true, text: "Recall", color: "#FFFFFF" },
+                    grid: { color: "rgba(255, 255, 255, 0.1)" }
+                },
+                y: {
+                    title: { display: true, text: "Precision", color: "#FFFFFF" },
+                    grid: { color: "rgba(255, 255, 255, 0.1)" }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: { color: "#FFFFFF" }
+                }
+            }
+        }} />
     </section>
     )}
 
@@ -87,7 +137,14 @@ return (
         <h3>KMeans Elbow</h3>
         <Line data={{
         labels: elbow.k_list,
-        datasets: [{ label: "Inertia", data: elbow.inertias }]
+        datasets: [{
+            label: "Inertia",
+            data: elbow.inertias,
+            borderColor: '#FFFFFF',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            borderWidth: 2,
+            pointBackgroundColor: '#FFFFFF'
+        }]
         }}
         options={{ scales: { x: { title: { display: true, text: "k" }}, y: { title: { display: true, text: "Inertia" }}}}} />
     </section>
@@ -106,6 +163,9 @@ return (
                 scores.silhouette ?? 0,
                 scores.v_measure ?? 0
                 ],
+                backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                borderColor: '#FFFFFF',
+                borderWidth: 1
             },
             ],
         }}
