@@ -93,44 +93,67 @@ return (
     </section>
 
     {pr && (
-    <section className="card">
-        <h3>Precision–Recall Curve</h3>
-        <Line data={{
-            labels: pr.recall,
-            datasets: [{
-                label: "Precision",
-                data: pr.precision,
-                borderColor: '#FFFFFF',
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderWidth: 2,
-                pointBackgroundColor: '#FFFFFF',
-                pointRadius: 3,
-                tension: 0.4,
-                fill: true
-            }]
-        }}
-        options={{
-            responsive: true,
-            parsing: false,
-            scales: {
-                x: {
-                    title: { display: true, text: "Recall", color: "#FFFFFF" },
-                    grid: { color: "rgba(255, 255, 255, 0.1)" }
-                },
-                y: {
-                    title: { display: true, text: "Precision", color: "#FFFFFF" },
-                    grid: { color: "rgba(255, 255, 255, 0.1)" }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    labels: { color: "#FFFFFF" }
-                }
+<section className="card">
+    <h3>Precision–Recall Curve</h3>
+    <Line 
+    data={{
+    datasets: [{
+        label: "PR Curve",
+        data: pr.recall.map((r, i) => ({ 
+        x: parseFloat(r), 
+        y: parseFloat(pr.precision[i]) 
+        })),
+        borderColor: '#38bdf8',
+        backgroundColor: 'rgba(56, 189, 248, 0.1)',
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.1
+    }]
+    }}
+    options={{
+    responsive: true,
+    maintainAspectRatio: true,
+    scales: {
+        x: { 
+        type: 'linear',
+        title: { 
+            display: true, 
+            text: "Recall",
+            font: { size: 14 }
+        },
+        min: 0,
+        max: 1,
+        ticks: { stepSize: 0.1 }
+        },
+        y: { 
+        type: 'linear',
+        title: { 
+            display: true, 
+            text: "Precision",
+            font: { size: 14 }
+        },
+        min: 0,
+        max: 1,
+        ticks: { stepSize: 0.1 }
+        }
+    },
+    plugins: {
+        legend: { 
+        display: true,
+        position: 'top'
+        },
+        tooltip: {
+        callbacks: {
+            label: (context) => {
+            return `Recall: ${context.parsed.x.toFixed(3)}, Precision: ${context.parsed.y.toFixed(3)}`;
             }
-        }} />
-    </section>
-    )}
+        }
+        }
+    }
+    }} 
+    />
+</section>
+)}
 
     {elbow && (
     <section className="card">
