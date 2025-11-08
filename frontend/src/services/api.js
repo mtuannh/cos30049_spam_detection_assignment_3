@@ -25,7 +25,6 @@ export const api = {
     charts: () => getJSON("/charts-data"),
     prCurve: () => getJSON("/pr-curve"),
     calibration: () => getJSON("/calibration"),
-    elbow: () => getJSON("/kmeans/elbow"),
     kmeansScores: () => getJSON("/kmeans/scores"),
     predictionStats: () => getJSON("/prediction-stats"),
     resetPredictions: () => postJSON("/reset-predictions", {}),

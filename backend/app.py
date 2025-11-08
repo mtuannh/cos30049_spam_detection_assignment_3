@@ -13,7 +13,7 @@ app.add_middleware(
     allow_methods=["*"], allow_headers=["*"],
 )
 
-# ---- Startup: try to load model or train new one ----
+#startup: try to load model or train new one
 MODEL = SpamModel()
 if MODEL.load_model():
     print("Loaded existing model from spam.pkl")
@@ -23,14 +23,15 @@ else:
     STARTUP_METRICS = MODEL.train()
 
 PRED_HISTORY = []
-# ---- Schemas ----
+
+#schemas
 class PredictIn(BaseModel):
     text: str = Field(..., min_length=1)
 
 class BatchPredictIn(BaseModel):
     texts: List[str] = Field(..., min_items=1, max_items=200)
 
-# ---- Routes ----
+#routes
 @app.get("/health")
 def health() -> Dict[str, Any]:
     return {
@@ -66,7 +67,6 @@ def metrics():
 def charts_data():
     return MODEL.charts_payload()
 
-# ---- Advanced (HD) ----
 @app.get("/pr-curve")
 def pr_curve():
     return MODEL.pr_curve()
@@ -75,9 +75,7 @@ def pr_curve():
 def calibration():
     return MODEL.calibration()
 
-@app.get("/kmeans/elbow")
-def kmeans_elbow():
-    return MODEL.kmeans_elbow()
+# /kmeans/elbow endpoint removed (feature deprecated)
 
 @app.get("/kmeans/scores")
 def kmeans_scores():

@@ -12,12 +12,11 @@ from sklearn.metrics import (
     precision_recall_curve
 )
 from sklearn.calibration import calibration_curve
-from sklearn.cluster import KMeans
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.metrics.cluster import v_measure_score
 from sklearn.metrics import silhouette_score
 
-# === Config ===
+#Config
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_PATH = BASE_DIR / "datasets_process" / "Spam" / "spam_merged_clean.csv"
 MODEL_PATH = BASE_DIR / "backend" / "spam.pkl"
@@ -37,13 +36,13 @@ class SpamModel:
         self._label_ratio: Dict[str, int] = {}
         self._lengths: List[int] = []
 
-    # ---------- Data ----------
+#data loading
     def load_data(self):
         df = pd.read_csv(DATA_PATH)
-        # expect columns: spam (0/1) and text (cleaned)
+        #expect columns: spam (0/1) and text (cleaned)
         df = df.dropna(subset=["spam", "text"]).copy()
         X = df["text"].astype(str).str.lower()
-        # robust mapping from string/number to 0/1
+        #robust mapping from string/number to 0/1
         y = (
             df["spam"]
             .apply(lambda v: int(str(v).strip() in ("1", "true", "spam")))
@@ -51,7 +50,7 @@ class SpamModel:
         )
         return X, y
 
-    # ---------- Train & caches ----------
+#train & caches
     def train(self):
         X, y = self.load_data()
         Xtr, Xte, ytr, yte = train_test_split(
@@ -71,14 +70,13 @@ class SpamModel:
             "n_test": int(Xte_vec.shape[0]),
         }
 
-        # caches for later endpoints
         self._cache.update({
             "X_train_vec": Xtr_vec, "y_train": ytr.reset_index(drop=True),
             "X_test_vec": Xte_vec, "y_test": yte.reset_index(drop=True),
             "X_all": X.reset_index(drop=True), "y_all": y.reset_index(drop=True)
         })
 
-        # Top spam words (CountVectorizer on spam texts)
+#top spam words (CountVectorizer on spam texts)
         spam_texts = X[y == 1]
         if len(spam_texts) > 0:
             Xc = self.count_vec.fit_transform(spam_texts)
@@ -92,7 +90,7 @@ class SpamModel:
         self._label_ratio = {"ham": int((y == 0).sum()), "spam": int((y == 1).sum())}
         self._lengths = pd.Series(X.astype(str).apply(len)).tolist()
         
-        # Save the trained model and vectorizer
+#save the trained model and vectorizer
         self.save_model()
         return metrics
 
@@ -127,12 +125,12 @@ class SpamModel:
             print(f"Error loading model: {str(e)}")
             return False
 
-    # ---------- Predict ----------
+#predict
     def predict_one(self, text: str) -> Dict[str, Any]:
         Xv = self.vec.transform([text.lower()])
         proba = float(self.clf.predict_proba(Xv)[:, 1][0])
         label = int(proba >= 0.5)
-        # simple explanation: top TF-IDF tokens in this input
+#simple explanation: top TF-IDF tokens in this input
         tfidf = Xv.toarray()[0]
         top_idx = np.argsort(tfidf)[::-1]
         feature_names = self.vec.get_feature_names_out()
@@ -142,7 +140,7 @@ class SpamModel:
     def predict_batch(self, texts: List[str]) -> List[Dict[str, Any]]:
         return [self.predict_one(t) for t in texts]
 
-    # ---------- Metrics ----------
+#metrics
     def metrics(self) -> Dict[str, Any]:
         Xte_vec = self._cache["X_test_vec"]
         yte = self._cache["y_test"]
@@ -155,15 +153,15 @@ class SpamModel:
             "n_test": int(Xte_vec.shape[0]),
         }
 
-    # ---------- Charts payload (core 3) ----------
+#charts payload
     def charts_payload(self) -> Dict[str, Any]:
         return {
             "label_distribution": self._label_ratio,
-            "message_length_hist": self._lengths[:5000],  # FE will bin
+            "message_length_hist": self._lengths[:5000],
             "top_spam_words": self._top_words,
         }
 
-    # ---------- Advanced: PR curve ----------
+#advanced: PR curve
     def pr_curve(self) -> Dict[str, Any]:
         try:
             Xte_vec = self._cache["X_test_vec"]
@@ -171,11 +169,10 @@ class SpamModel:
             probs = self.clf.predict_proba(Xte_vec)[:, 1]
             precision, recall, thresholds = precision_recall_curve(yte, probs)
             
-            # Convert numpy arrays to lists and ensure they have matching lengths
+#convert numpy arrays to lists and ensure they have matching lengths
             precision = precision.tolist()
             recall = recall.tolist()
             
-            # The API needs to return arrays of equal length
             if len(precision) > len(recall):
                 precision = precision[:len(recall)]
             elif len(recall) > len(precision):
@@ -194,7 +191,7 @@ class SpamModel:
                 "thresholds": []
             }
 
-    # ---------- Advanced: Calibration ----------
+#Advanced: Calibration
     def calibration(self, n_bins: int = 10) -> Dict[str, Any]:
         Xte_vec = self._cache["X_test_vec"]
         yte = self._cache["y_test"]
@@ -206,32 +203,7 @@ class SpamModel:
             "bins": int(n_bins),
         }
 
-    # ---------- KMeans: elbow ----------
-    def kmeans_elbow(self, sample_cap: int = 1500) -> Dict[str, Any]:
-        X_all = self._cache["X_all"]
-        n = min(len(X_all), sample_cap)
-        if n < 10:
-            return {"k_list": [], "inertias": [], "note": "too few samples"}
-
-        Xs = X_all.sample(n, random_state=RANDOM_STATE)
-        Xv = self.vec.transform(Xs)  # CSR sparse
-
-        ks = list(range(2, 7))
-        inertias = []
-
-        common = dict(random_state=RANDOM_STATE, batch_size=1024, max_iter=100)
-        for k in ks:
-            try:
-                km = MiniBatchKMeans(n_clusters=k, **common, n_init=5)  
-            except TypeError:
-                km = MiniBatchKMeans(n_clusters=k, **common)            
-
-            km.fit(Xv)
-            inertias.append(float(km.inertia_))
-
-        return {"k_list": ks, "inertias": inertias}
-
-    # ---------- KMeans: scores (silhouette & v-measure for k=2) ----------
+#KMeans: scores (silhouette & v-measure for k=2)
     def kmeans_scores(self, sample_cap: int = 1500) -> Dict[str, Any]:
         try:
             X_all = self._cache["X_all"]; y_all = self._cache["y_all"]
@@ -243,10 +215,8 @@ class SpamModel:
             idx = rng.choice(len(X_all), n, replace=False)
             Xs = X_all.iloc[idx]; ys = y_all.iloc[idx]
 
-            # chỉ transform, KHÔNG fit lại vec
             Xv = self.vec.transform(Xs)  # CSR sparse
 
-            # dùng MiniBatchKMeans cho sparse, kèm fallback nếu bản sklearn không có n_init
             try:
                 km = MiniBatchKMeans(
                     n_clusters=2, random_state=RANDOM_STATE,
@@ -265,5 +235,4 @@ class SpamModel:
             vms = float(v_measure_score(ys, labels))
             return {"silhouette": sil, "v_measure": vms}
         except Exception as e:
-            # không để 500 trả ra FE; báo lỗi có kiểm soát
             return {"silhouette": None, "v_measure": None, "error": str(e)}
