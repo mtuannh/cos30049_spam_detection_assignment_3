@@ -225,44 +225,52 @@ return (
     </section>
 )}
 
-{predStats && predStats.total > 0 && (
+{predStats && (
     <section className="card">
         <h3>Live Prediction Distribution</h3>
-        <Pie data={{
-            labels: ["Ham", "Spam"],
-            datasets: [{
-                data: [predStats.ham, predStats.spam],
-                backgroundColor: ['rgba(75, 192, 192, 0.8)', 'rgba(255, 99, 132, 0.8)'],
-                borderColor: '#FFFFFF',
-                borderWidth: 2
-            }]
-        }} 
-        options={{
-            responsive: true,
-            plugins: {
-                legend: { 
-                    display: true,
-                    position: 'bottom'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: (context) => {
-                            const label = context.label || '';
-                            const value = context.parsed || 0;
-                            const total = predStats.total;
-                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                            return `${label}: ${value} (${percentage}%)`;
+        {predStats.total > 0 ? (
+            <>
+                <Pie data={{
+                    labels: ["Ham", "Spam"],
+                    datasets: [{
+                        data: [predStats.ham, predStats.spam],
+                        backgroundColor: ['rgba(75, 192, 192, 0.8)', 'rgba(255, 99, 132, 0.8)'],
+                        borderColor: '#FFFFFF',
+                        borderWidth: 2
+                    }]
+                }} 
+                options={{
+                    responsive: true,
+                    plugins: {
+                        legend: { 
+                            display: true,
+                            position: 'bottom'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = predStats.total;
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
                         }
                     }
-                }
-            }
-        }}
-        />
-        <p style={{ marginTop: 12, textAlign: 'center' }}>
-            <b>Total Predictions:</b> {predStats.total} ·
-            <b> Ham:</b> {predStats.ham} ({predStats.total > 0 ? ((predStats.ham / predStats.total) * 100).toFixed(1) : 0}%) ·
-            <b> Spam:</b> {predStats.spam} ({predStats.total > 0 ? ((predStats.spam / predStats.total) * 100).toFixed(1) : 0}%)
-        </p>
+                }}
+                />
+                <p style={{ marginTop: 12, textAlign: 'center' }}>
+                    <b>Total Predictions:</b> {predStats.total} ·
+                    <b> Ham:</b> {predStats.ham} ({predStats.total > 0 ? ((predStats.ham / predStats.total) * 100).toFixed(1) : 0}%) ·
+                    <b> Spam:</b> {predStats.spam} ({predStats.total > 0 ? ((predStats.spam / predStats.total) * 100).toFixed(1) : 0}%)
+                </p>
+            </>
+        ) : (
+            <p style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+                No predictions yet. Make some predictions on the <b>Predict</b> or <b>Batch</b> pages to see the distribution here.
+            </p>
+        )}
     </section>
 )}
 </div>
