@@ -144,24 +144,6 @@ return (
         </div>
     )}
     
-    {/* Dynamic Suggestions */}
-    {suggestions.length > 0 && validationErrors.length === 0 && (
-        <div style={{ 
-            backgroundColor: 'transparent', 
-            border: '2px solid rgba(255, 193, 7, 0.6)', 
-            borderRadius: '4px', 
-            padding: '10px', 
-            marginTop: '10px' 
-        }}>
-            <strong style={{ color: '#ffc107' }}>💡 Insights:</strong>
-            <ul style={{ margin: '5px 0 0 20px', padding: 0 }}>
-                {suggestions.map((sug, i) => (
-                    <li key={i} style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '13px' }}>{sug}</li>
-                ))}
-            </ul>
-        </div>
-    )}
-    
     <div className="actions">
         <button 
             type="submit" 
@@ -203,9 +185,7 @@ return (
                 }}
                 onMouseOver={(e) => e.target.style.backgroundColor = '#1976D2'}
                 onMouseOut={(e) => e.target.style.backgroundColor = '#2196F3'}
-            >
-                <span>📊</span>
-                View Pie Chart
+            >View Pie Chart
             </button>
         </div>
         <p>Probability (spam): <b>{(result.probability * 100).toFixed(2)}%</b></p>
