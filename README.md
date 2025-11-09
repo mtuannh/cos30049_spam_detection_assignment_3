@@ -10,8 +10,10 @@ Spam Email Detection — Assignment 3
    ## Windows
    **Navigate to the project root directory**
      - cd cos30049_spam_detection_assignment_3-1
+
    **Create virtual environment**
      - python -m venv venv
+     
    **Activate virtual environment (PowerShell)**
      - .\venv\Scripts\Activate.ps1
    **Activate virtual environment (Command Prompt)**
