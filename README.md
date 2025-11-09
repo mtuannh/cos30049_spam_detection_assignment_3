@@ -8,21 +8,21 @@ Spam Email Detection — Assignment 3
    **Creating and Activating Virtual Environment**
 
    ## Windows
-   # Navigate to the project root directory
+   **Navigate to the project root directory**
      - cd cos30049_spam_detection_assignment_3-1
-   # Create virtual environment
+   **Create virtual environment**
      - python -m venv venv
-   # Activate virtual environment (PowerShell)
+   **Activate virtual environment (PowerShell)**
      - .\venv\Scripts\Activate.ps1
-   # Activate virtual environment (Command Prompt)
+   **Activate virtual environment (Command Prompt)**
      - .\venv\Scripts\activate
 
    ## macOS/Linux
-   # Navigate to the project root directory
+   **Navigate to the project root directory**
      - cd cos30049_spam_detection_assignment_3-1
-   # Create virtual environment
+   **Create virtual environment**
      - python3 -m venv venv
-   # Activate virtual environment
+   **Activate virtual environment**
      - source venv/bin/activate
 
 2. Backend Setup (FastAPI + ML Model)
