@@ -34,6 +34,7 @@ Spam Email Detection — Assignment 3
      - source venv/bin/activate
 
 2. Backend Setup (FastAPI + ML Model)
+
    **Install dependencies:**
      - cd backend
      - pip install -r requirements.txt
