@@ -28,7 +28,7 @@ Spam Email Detection — Assignment 3
      - cd cos30049_spam_detection_assignment_3-1
 
    **Create virtual environment**
-     - python3 -m venv venv
+     - python -m venv venv
 
    **Activate virtual environment**
      - source venv/bin/activate
@@ -44,8 +44,9 @@ Spam Email Detection — Assignment 3
    **Run backend**
    - uvicorn app:app --reload --port 8000
 
-3. Frontend Setup
+3. Frontend Setup (Open a new terminal)
    **Install dependencies:**
+     - cd cos30049_spam_detection_assignment_3-1
      - cd frontend
      - npm install
      - npm start
