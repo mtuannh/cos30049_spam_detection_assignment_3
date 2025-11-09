@@ -48,6 +48,9 @@ Spam Email Detection — Assignment 3
      - npm install
      - npm start
 
+   **Notice**
+     - If you see any notification like this "9 vulnerabilities (3 moderate, 6 high)" in the terminal after running "npm install", just ignore it then straightforward to "npm start". 
+
 4. Configuration for AI Model Integration
    **Model Overview**
    The backend uses a classic Multinomial Naive Bayes classifier trained on text features extracted by TF-IDF Vectorizer.
