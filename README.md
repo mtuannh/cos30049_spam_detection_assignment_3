@@ -14,6 +14,9 @@ Spam Email Detection — Assignment 3
    **Create virtual environment**
      - python -m venv venv
 
+  **Fix PowerShell execution policy (if needed)**
+     - Set-ExecutionPolicy Bypass -Scope Process
+
    **Activate virtual environment (PowerShell)**
      - .\venv\Scripts\Activate.ps1
 
@@ -26,7 +29,7 @@ Spam Email Detection — Assignment 3
 
    **Create virtual environment**
      - python3 -m venv venv
-     
+
    **Activate virtual environment**
      - source venv/bin/activate
 
