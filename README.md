@@ -45,6 +45,7 @@ Spam Email Detection — Assignment 3
    - uvicorn app:app --reload --port 8000
 
 3. Frontend Setup (Open a new terminal)
+
    **Install dependencies:**
      - cd cos30049_spam_detection_assignment_3-1
      - cd frontend
