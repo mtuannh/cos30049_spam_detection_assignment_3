@@ -37,8 +37,10 @@ Spam Email Detection — Assignment 3
    **Install dependencies:**
      - cd backend
      - pip install -r requirements.txt
-   ** Required Libraries**
+
+   **Required Libraries**
    (fastapi, uvicorn, scikit-learn, numpy/pandas, joblib, pydantic, collections)
+
    **Run backend**
    - uvicorn app:app --reload --port 8000
 
@@ -52,6 +54,7 @@ Spam Email Detection — Assignment 3
      - If you see any notification like this "9 vulnerabilities (3 moderate, 6 high)" in the terminal after running "npm install", just ignore it then straightforward to "npm start". 
 
 4. Configuration for AI Model Integration
+
    **Model Overview**
    The backend uses a classic Multinomial Naive Bayes classifier trained on text features extracted by TF-IDF Vectorizer.
 
