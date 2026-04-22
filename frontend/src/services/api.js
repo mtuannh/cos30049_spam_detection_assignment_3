@@ -1,4 +1,4 @@
-const BASE = "http://localhost:8000";
+const BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
 
 
 async function getJSON(path) {
