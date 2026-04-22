@@ -32,6 +32,10 @@ class BatchPredictIn(BaseModel):
     texts: List[str] = Field(..., min_items=1, max_items=200)
 
 #routes
+@app.get("/")
+def root():
+    return {"message": "backend is running"}
+
 @app.get("/health")
 def health() -> Dict[str, Any]:
     return {
